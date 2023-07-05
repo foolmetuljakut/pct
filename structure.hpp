@@ -66,6 +66,8 @@ namespace CPI {
     public:
         TargetSpec spec;
         std::vector<File> files;
+        std::string unittestsymbol;
+        int unittestlistmax;
         Project();
         Project(ptree& node);
         Project(std::string filename);

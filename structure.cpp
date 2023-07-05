@@ -78,6 +78,10 @@ bool CPI::Project::haschanged() {
     return false;
 }
 
+// todo:
+// iterate over i = 0, i < unittestlistmax
+// and execute the same compilation order
+// with -D${unittestsymbol}
 std::string CPI::Project::compilecmd() {
     std::stringstream s;
     s << "g++ -o " << spec.name << " ";
@@ -112,6 +116,8 @@ void CPI::Project::update() {
 ptree CPI::Project::tonode() {
     ptree node;
     node.put_child("target", spec.tonode());
+    node.put("unittestsymbol", unittestsymbol);
+    node.put("unittestlistmax", unittestlistmax);
     /*no i've tried, adding a list DOESN'T get simpler*/
     ptree filenode;
     for(auto& file : files)
@@ -121,6 +127,8 @@ ptree CPI::Project::tonode() {
 }
 
 void CPI::Project::fromnode(ptree& node) {
+    unittestsymbol = node.get<std::string>("unittestsymbol");
+    unittestlistmax = node.get<int>("unittestlistmax");
     std::string name = node.get<std::string>("target.name"),
                 opts = node.get<std::string>("target.opts");
     spec = TargetSpec(name, opts);

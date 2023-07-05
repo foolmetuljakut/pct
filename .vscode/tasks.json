@@ -1,0 +1,11 @@
+{
+    "version":"2.0.0",
+    "tasks": [
+        {
+            "label": "g++ via comp.sh",
+            "command": "./comp.sh", // Could be any other shell command
+            "args": [],
+            "type": "shell"
+        }
+    ]
+}

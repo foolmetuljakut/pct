@@ -130,7 +130,9 @@ enum ArgumentMode {
     DECL_PROJECT,
     DECL_TARGETNAME,
     LIST_OPTIONS,
-    LIST_FILES
+    LIST_FILES,
+    UNITTEST_SYMBOL,
+    UNITTEST_LISTMAX
 };
 
 void separateoptions(std::string& arg, std::vector<std::string>& args) {
@@ -250,6 +252,31 @@ int main(int argc, char **argv) {
                 mode == 3 ? "decl. options" : "decl. files"
                 ))), ") to accept a list of files"});
         }
+        if(!std::string("-u").compare(arg) || !std::string("--unittest-symbol").compare(arg)) {
+            if(mode >= LIST_FILES) {
+                mode = UNITTEST_SYMBOL;
+                expecting = false;
+            } else
+                throw CPI::CPIException({"currently not in mode (", 
+                mode == 0 ? "decl. struct." : (
+                mode == 1 ? "decl. proj" : (
+                mode == 2 ? "decl. target" : (
+                mode == 3 ? "decl. options" : "decl. files"
+                ))), ") to accept a list of files"}); 
+        }
+        if(!std::string("-l").compare(arg) || !std::string("--unittest-listmax").compare(arg)) {
+            if(mode >= UNITTEST_SYMBOL) {
+                mode = UNITTEST_LISTMAX;
+                expecting = false;
+            } else
+                throw CPI::CPIException({"currently not in mode (", 
+                mode == 0 ? "decl. struct." : (
+                mode == 1 ? "decl. proj" : (
+                mode == 2 ? "decl. target" : (
+                mode == 3 ? "decl. options" : "decl. files"
+                ))), ") to accept a list of files"});
+            
+        }
 
         /*processing depending on mode*/
         switch(mode) {
@@ -301,6 +328,23 @@ int main(int argc, char **argv) {
             case LIST_FILES:
                 if(expecting)
                     currentproject->addfile(arg);
+                else
+                    expecting = true;
+                break;
+            case UNITTEST_SYMBOL:
+                if(expecting)
+                    currentproject->unittestsymbol = arg;
+                else
+                    expecting = true;
+                break;
+            case UNITTEST_LISTMAX:
+                if(expecting)
+                    try {
+                        currentproject->unittestlistmax = std::stoi(arg); 
+                    }
+                    catch(std::invalid_argument& e) {
+                        throw CPI::CPIException({"could not convert \"", arg, "\" to a unittest list max integer. terminating."});
+                    }
                 else
                     expecting = true;
                 break;

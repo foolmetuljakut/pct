@@ -1,0 +1,40 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "build\/sotest-ut",
+            "opts": "-fdiagnostics-color=always -Werror -g -lsolib -L build\/"
+        },
+        "unittestsymbol": "",
+        "unittestlistmax": "-134435472",
+        "files": [
+            {
+                "name": "tests\/sotest.cpp",
+                "hash": "00000000000000000000000000000000"
+            },
+            {
+                "name": "tests\/solib.hpp",
+                "hash": "00000000000000000000000000000000"
+            }
+        ]
+    },
+    "projects": [
+        {
+            "target": {
+                "name": "build\/libsolib.so",
+                "opts": "-fdiagnostics-color=always -Werror -g -fpic -shared"
+            },
+            "unittestsymbol": "UNITTESTKEY",
+            "unittestlistmax": "5",
+            "files": [
+                {
+                    "name": "tests\/solib.hpp",
+                    "hash": "00000000000000000000000000000000"
+                },
+                {
+                    "name": "tests\/solib.cpp",
+                    "hash": "00000000000000000000000000000000"
+                }
+            ]
+        }
+    ]
+}
