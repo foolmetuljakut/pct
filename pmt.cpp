@@ -133,38 +133,33 @@ enum ArgumentMode {
     LIST_FILES
 };
 
-int main(int argc, char **argv) {
-    std::vector<std::string> args;
-    for(unsigned i = 1; i < argc; i++) {
-        auto arg = std::string(argv[i]);
-        if(!std::string("-pt").compare(arg)) {
-            args.push_back(std::string("-p"));
-            args.push_back(std::string("-t"));
-        }
-        else if(!std::string("-spt").compare(arg)) {
-            args.push_back(std::string("-s")); // assume target name = structure name = mainapp name
-            args.push_back(std::string("-p"));
-            args.push_back(std::string("-t"));
-        }
-        else if (!std::string("-v").compare(arg) || !std::string("--version").compare(arg)) {
-            std::cout << "version: " << CPIVERSION << std::endl;
-        }
-        else if (!std::string("-h").compare(arg) || !std::string("--help").compare(arg)) {
-            std::cout << "help: " << 
-            "--structure|-s opens a new structure and subs every following command to the last declared structure\n \
-            --project|-p opens a new project and subs every following command .... bla\n \
-            --target|-t expects the name of the project target\n \
-            --options|-o opens a list of options and subs every following command .... bla\n \
-            --files|-f opens a list of files and subs .... you get the idea" << std::endl;
-        }
-        else {
-            args.push_back(arg);
-        }
+void separateoptions(std::string& arg, std::vector<std::string>& args) {
+    if(!std::string("-pt").compare(arg)) {
+        args.push_back(std::string("-p"));
+        args.push_back(std::string("-t"));
     }
+    else if(!std::string("-spt").compare(arg)) {
+        args.push_back(std::string("-s")); // assume target name = structure name = mainapp name
+        args.push_back(std::string("-p"));
+        args.push_back(std::string("-t"));
+    }
+    else if (!std::string("-v").compare(arg) || !std::string("--version").compare(arg)) {
+        std::cout << "version: " << CPIVERSION << std::endl;
+    }
+    else if (!std::string("-h").compare(arg) || !std::string("--help").compare(arg)) {
+        std::cout << "help: " << 
+        "--structure|-s opens a new structure and subs every following command to the last declared structure\n \
+        --project|-p opens a new project and subs every following command .... bla\n \
+        --target|-t expects the name of the project target\n \
+        --options|-o opens a list of options and subs every following command .... bla\n \
+        --files|-f opens a list of files and subs .... you get the idea" << std::endl;
+    }
+    else {
+        args.push_back(arg);
+    }
+}
 
-    /*shortcut of this whole processing:
-        --exec|-e <filemame> try to load and execute project*/
-
+void fe_execution(std::vector<std::string>& args) {
     if(args.size() >= 2) {
         auto arg0 = args[0], fn = args[1];
         bool e = !std::string("-e").compare(arg0) || !std::string("--exec").compare(arg0),
@@ -180,15 +175,28 @@ int main(int argc, char **argv) {
                 else {
                     //throw CPI::CPIException({"solution ", fn, " up to date"});
                     std::cout << "solution " << fn << " is up to date" << std::endl; // otherwise "crashes" with return code -1
-                    return 0;
+                    exit(0);
                 }
             }
             catch (std::exception& e) {
                 std::cout << e.what() << std::endl;
-                return -1;
+                exit(-1);
             }
         }
     }
+}
+
+int main(int argc, char **argv) {
+    std::vector<std::string> args;
+    for(unsigned i = 1; i < argc; i++) {
+        auto arg = std::string(argv[i]);
+        separateoptions(arg, args);
+    }
+
+    /*shortcut of this whole processing:
+        --exec|-e <filemame> try to load and execute project*/
+
+    fe_execution(args);
 
     /*processing*/
     unsigned mode = DECL_STRUCTURE; /* s:0, p:1, t:2, o:3, f:4*/
