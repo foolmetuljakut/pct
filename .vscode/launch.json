@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/pmt",
-            "args": ["-spt", "build/sotest-ut", "-o", "-fdiagnostics-color=always -Werror -g -lsolib -L build/", "-f", "tests/sotest.cpp", "tests/solib.hpp", "-pt", "build/libsolib.so", "-o", "-fdiagnostics-color=always -Werror -g -fpic -shared", "-f", "tests/solib.hpp", "tests/solib.cpp", "-u", "UNITTESTKEY", "-l", "5"],
+            "args": ["-spt", "build/main", "-o", "-fdiagnostics-color=always -Werror -g", "-f", "build/main.cpp", "-u", "TESTKEY", "-l", "5"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -4,8 +4,8 @@
             "name": "build\/sotest-ut",
             "opts": "-fdiagnostics-color=always -Werror -g -lsolib -L build\/"
         },
-        "unittestsymbol": "",
-        "unittestlistmax": "-134435472",
+        "unittestsymbol": "TESTKEY",
+        "unittestlistmax": "5",
         "files": [
             {
                 "name": "tests\/sotest.cpp",
@@ -23,8 +23,8 @@
                 "name": "build\/libsolib.so",
                 "opts": "-fdiagnostics-color=always -Werror -g -fpic -shared"
             },
-            "unittestsymbol": "UNITTESTKEY",
-            "unittestlistmax": "5",
+            "unittestsymbol": "",
+            "unittestlistmax": "-134355072",
             "files": [
                 {
                     "name": "tests\/solib.hpp",

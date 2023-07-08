@@ -75,7 +75,7 @@ namespace CPI {
         Project(TargetSpec& spec, std::vector<File>& files);
         void addfile(std::string filename);
         bool haschanged();
-        std::string compilecmd();
+        std::string compilecmd(int unittestnr = 0);
         void compile();
         void update();
         void save(std::string filename);

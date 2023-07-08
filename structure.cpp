@@ -78,23 +78,41 @@ bool CPI::Project::haschanged() {
     return false;
 }
 
-// todo:
-// iterate over i = 0, i < unittestlistmax
-// and execute the same compilation order
-// with -D${unittestsymbol}
-std::string CPI::Project::compilecmd() {
+std::string CPI::Project::compilecmd(int unittestnr) {
     std::stringstream s;
-    s << "g++ -o " << spec.name << " ";
+    s << "g++ -o ";
+    if(unittestnr == 0) { // regular compilation
+        s << spec.name << " ";
+    }
+    else {
+        s << spec.name << "-ut" << unittestnr << " ";
+    }
+    
     for(auto& file : files)
         s << file.name << " ";
     s << spec.opts;
+
+    if(unittestnr > 0) {
+        s << " -D" << unittestsymbol << unittestnr;
+    }
+    else {
+        s << " -D" << "MAIN";
+    }
+
     return s.str();
 }
 
 void CPI::Project::compile() {
-    std::string s = compilecmd();
-    std::cout << "exec: \n" << s << std::endl;
-    exec(s);
+    int bnd = unittestsymbol.size() > 0 ? unittestlistmax : 0;
+    for(size_t i = 0; i <= bnd; i++) {
+        std::string s = compilecmd(i);
+        if(unittestsymbol.size() > 0)
+            std::cout << "exec unittest compilation" 
+                << i << ": \n" << s << std::endl;
+        else
+            std::cout << "exec app compilation: \n" << s << std::endl;
+        exec(s);
+    }
     update();
 }
 
