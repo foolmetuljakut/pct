@@ -13,7 +13,7 @@ using boost::property_tree::ptree,
 
 #include "structure.hpp"
 
-#define CPIVERSION "0.1"
+#define CPIVERSION "0.2"
 
 /*int main0(int argc, char **argv) {
     options_description descr("allowed");
