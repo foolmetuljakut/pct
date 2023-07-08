@@ -2,3 +2,4 @@ pmt
 .vscode/settings.json
 build/main
 build/main-ut*
+build/no-uts

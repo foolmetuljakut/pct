@@ -1,0 +1,17 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "build\/no-uts",
+            "opts": "-fdiagnostics-color=always -Werror -g"
+        },
+        "unittestsymbol": "",
+        "unittestlistmax": "2025114992",
+        "files": [
+            {
+                "name": "build\/no-uts.cpp",
+                "hash": "30cfc074bf518d62d6b5071b562e8f46"
+            }
+        ]
+    },
+    "projects": ""
+}
