@@ -1,0 +1,16 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "tests\/testpr",
+            "opts": "-Wall"
+        },
+        "unittestsymbol": "TEST",
+        "unittestlistmax": "2",
+        "files": [
+            {
+                "name": "tests\/main.cpp",
+                "hash": "41ef60cd5ea07fd93d65a647904a875b"
+            }
+        ]
+    }
+}

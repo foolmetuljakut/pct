@@ -1,0 +1,36 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "build\/sotest",
+            "opts": "-fdiagnostics-color=always -Werror -g -lsolib -L build\/"
+        },
+        "files": [
+            {
+                "name": "testproject\/sotest.cpp",
+                "hash": "6f42a68d9b811a9ab0e2b95efd5455b7"
+            },
+            {
+                "name": "testproject\/solib.hpp",
+                "hash": "2e183b50b288d12b216b8b5a5386df7d"
+            }
+        ]
+    },
+    "projects": [
+        {
+            "target": {
+                "name": "build\/libsolib.so",
+                "opts": "-fdiagnostics-color=always -Werror -g -fpic -shared"
+            },
+            "files": [
+                {
+                    "name": "testproject\/solib.hpp",
+                    "hash": "2e183b50b288d12b216b8b5a5386df7d"
+                },
+                {
+                    "name": "testproject\/solib.cpp",
+                    "hash": "7915c5aa9391bcf0b7b5cf0bc28b5c87"
+                }
+            ]
+        }
+    ]
+}

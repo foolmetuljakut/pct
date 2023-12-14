@@ -3,3 +3,10 @@ pmt
 build/main
 build/main-ut*
 build/no-uts
+build/sotest
+build/libsolib.so
+
+tests/testpr
+tests/testpr-ut1
+tests/testpr-ut2
+tests/__pycache__

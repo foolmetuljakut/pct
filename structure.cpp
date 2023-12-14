@@ -134,8 +134,10 @@ void CPI::Project::update() {
 ptree CPI::Project::tonode() {
     ptree node;
     node.put_child("target", spec.tonode());
-    node.put("unittestsymbol", unittestsymbol);
-    node.put("unittestlistmax", unittestlistmax);
+    if(unittestsymbol.size() > 0) {
+        node.put("unittestsymbol", unittestsymbol);
+        node.put("unittestlistmax", unittestlistmax);
+    }
     /*no i've tried, adding a list DOESN'T get simpler*/
     ptree filenode;
     for(auto& file : files)
@@ -145,8 +147,16 @@ ptree CPI::Project::tonode() {
 }
 
 void CPI::Project::fromnode(ptree& node) {
-    unittestsymbol = node.get<std::string>("unittestsymbol");
-    unittestlistmax = node.get<int>("unittestlistmax");
+
+    if(node.count("unittestsymbol")) {
+        unittestsymbol = node.get<std::string>("unittestsymbol");
+        unittestlistmax = node.get<int>("unittestlistmax");
+    }
+    else {
+        unittestsymbol = "";
+        unittestlistmax = 0;
+    }
+
     std::string name = node.get<std::string>("target.name"),
                 opts = node.get<std::string>("target.opts");
     spec = TargetSpec(name, opts);
@@ -230,9 +240,11 @@ ptree CPI::Solution::tonode() {
     node.put_child("mainapp", mainapp.tonode());
     /*no i've tried, adding a list DOESN'T get simpler*/
     ptree projectnode;
-    for(auto& project : projects)
-        projectnode.push_back(ptree::value_type("", project.tonode()));
-    node.add_child("projects", projectnode);
+    if(projects.size() > 0) {
+        for(auto& project : projects)
+            projectnode.push_back(ptree::value_type("", project.tonode()));
+        node.add_child("projects", projectnode);        
+    }
     return node;
 }
 
@@ -249,8 +261,10 @@ void CPI::Solution::load() {
     ptree mainappnode = node.get_child("mainapp");
     mainapp = Project(mainappnode);
     
-    for( auto& projectnode : node.get_child("projects")) {
-        projects.push_back(Project(projectnode.second));
+    if(node.count("projects")) {
+        for( auto& projectnode : node.get_child("projects")) {
+            projects.push_back(Project(projectnode.second));
+        }
     }
 }
 

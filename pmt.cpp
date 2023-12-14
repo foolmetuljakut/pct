@@ -150,11 +150,14 @@ void separateoptions(std::string& arg, std::vector<std::string>& args) {
     }
     else if (!std::string("-h").compare(arg) || !std::string("--help").compare(arg)) {
         std::cout << "help: " << 
-        "--structure|-s opens a new structure and subs every following command to the last declared structure\n \
+        "   --structure|-s opens a new structure and subs every following command to the last declared structure\n \
         --project|-p opens a new project and subs every following command .... bla\n \
         --target|-t expects the name of the project target\n \
         --options|-o opens a list of options and subs every following command .... bla\n \
-        --files|-f opens a list of files and subs .... you get the idea" << std::endl;
+        --files|-f opens a list of files and subs .... you get the idea\n \
+        --unittest-symbol|-u defines an in-code preprocessor symbol that is unique in the unittest application\n \
+        \twhile the main application gets passed the unique symbol MAIN\n \
+        --unittest-listmax|-l defines the number of unittest applications" << std::endl;
     }
     else {
         args.push_back(arg);
