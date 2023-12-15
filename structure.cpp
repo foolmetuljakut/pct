@@ -42,9 +42,9 @@ ptree CPI::TargetSpec::tonode() {
     return node;
 }
 
-CPI::Project::Project() {}
+CPI::Project::Project() : vMajor{0}, vMinor{0}, vPatch{0}, vBuild{0} {}
 
-CPI::Project::Project(ptree& node) {
+CPI::Project::Project(ptree& node) : vMajor{0}, vMinor{0}, vPatch{0}, vBuild{0} {
     fromnode(node);
 }
 
@@ -55,11 +55,19 @@ CPI::Project::Project(std::string filename) {
 CPI::Project::Project(TargetSpec& spec, std::initializer_list<File> files) : spec(spec) {
     for( auto& file : files)
         this->files.push_back(file);
+    vMajor = 0;
+    vMinor = 0;
+    vPatch = 0;
+    vBuild = 0;
 }
 
 CPI::Project::Project(TargetSpec& spec, std::vector<File>& files) {
     for( auto& file : files)
         this->files.push_back(file);
+    vMajor = 0;
+    vMinor = 0;
+    vPatch = 0;
+    vBuild = 0;
 }
 
 void CPI::Project::addfile(std::string filename) {
@@ -103,6 +111,8 @@ std::string CPI::Project::compilecmd(int unittestnr) {
 }
 
 void CPI::Project::compile() {
+    vBuild++;
+
     int bnd = unittestsymbol.size() > 0 ? unittestlistmax : 0;
     for(size_t i = 0; i <= bnd; i++) {
         std::string s = compilecmd(i);
@@ -134,6 +144,9 @@ void CPI::Project::update() {
 ptree CPI::Project::tonode() {
     ptree node;
     node.put_child("target", spec.tonode());
+    std::stringstream version;
+    version << vMajor << "." << vMinor << "." << vPatch << "." << vBuild;
+    node.put("version", version.str());
     if(unittestsymbol.size() > 0) {
         node.put("unittestsymbol", unittestsymbol);
         node.put("unittestlistmax", unittestlistmax);
@@ -155,6 +168,36 @@ void CPI::Project::fromnode(ptree& node) {
     else {
         unittestsymbol = "";
         unittestlistmax = 0;
+    }
+
+    if(node.count("version")) {
+        std::string version = node.get<std::string>("version");
+        std::string token;
+        size_t pos = 0, ctr = 0;
+        while((pos = version.find(".")) != std::string::npos) {
+            token = version.substr(0, pos);
+            size_t n = std::stol(token);
+            switch(ctr) {
+                case 0:
+                    vMajor = n;
+                    break;
+                case 1:
+                    vMinor = n;
+                    break;
+                case 2:
+                    vPatch = n;
+                    break;
+                default:
+                    throw CPIException({"what the fuck is happening with your version?! ", node.get<std::string>("version")});
+            }
+            version.erase(0, pos +1);
+        }
+        vBuild = std::stol(version); // last segment is not processed by while loop
+    } else {
+        vMajor = 0;
+        vMinor = 0;
+        vPatch = 0;
+        vBuild = 0;
     }
 
     std::string name = node.get<std::string>("target.name"),

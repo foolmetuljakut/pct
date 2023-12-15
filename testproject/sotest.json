@@ -4,14 +4,15 @@
             "name": "build\/sotest",
             "opts": "-fdiagnostics-color=always -Werror -g -lsolib -L build\/"
         },
+        "version": "0.0.0.3",
         "files": [
-            {
-                "name": "testproject\/sotest.cpp",
-                "hash": "6f42a68d9b811a9ab0e2b95efd5455b7"
-            },
             {
                 "name": "testproject\/solib.hpp",
                 "hash": "2e183b50b288d12b216b8b5a5386df7d"
+            },
+            {
+                "name": "testproject\/sotest.cpp",
+                "hash": "6f42a68d9b811a9ab0e2b95efd5455b7"
             }
         ]
     },
@@ -21,6 +22,7 @@
                 "name": "build\/libsolib.so",
                 "opts": "-fdiagnostics-color=always -Werror -g -fpic -shared"
             },
+            "version": "0.0.0.2",
             "files": [
                 {
                     "name": "testproject\/solib.hpp",

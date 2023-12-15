@@ -4,6 +4,7 @@
             "name": "build\/main",
             "opts": "-fdiagnostics-color=always -Werror -g"
         },
+        "version": "0.0.0.3",
         "unittestsymbol": "TESTKEY",
         "unittestlistmax": "5",
         "files": [
@@ -12,6 +13,5 @@
                 "hash": "32b6f85033b00cb33f9d8959d2b4419f"
             }
         ]
-    },
-    "projects": ""
+    }
 }

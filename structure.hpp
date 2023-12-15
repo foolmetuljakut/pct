@@ -68,6 +68,7 @@ namespace CPI {
         std::vector<File> files;
         std::string unittestsymbol;
         int unittestlistmax;
+        size_t vMajor, vMinor, vPatch, vBuild;
         Project();
         Project(ptree& node);
         Project(std::string filename);
