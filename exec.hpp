@@ -7,9 +7,10 @@
 #include <stdexcept>
 #include <string>
 #include <array>
+#include <utility>
 
 namespace CPI {
-    std::string exec(std::string cmd);
+    std::tuple<std::string, int> exec(std::string cmd);
 };
 
 #endif

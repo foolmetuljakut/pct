@@ -4,7 +4,7 @@
             "name": "build\/sotest",
             "opts": "-fdiagnostics-color=always -Werror -g -lsolib -L build\/"
         },
-        "version": "0.0.0.3",
+        "version": "0.0.0.6",
         "files": [
             {
                 "name": "testproject\/solib.hpp",
@@ -22,7 +22,7 @@
                 "name": "build\/libsolib.so",
                 "opts": "-fdiagnostics-color=always -Werror -g -fpic -shared"
             },
-            "version": "0.0.0.2",
+            "version": "0.0.0.15",
             "files": [
                 {
                     "name": "testproject\/solib.hpp",

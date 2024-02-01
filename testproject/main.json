@@ -4,7 +4,7 @@
             "name": "build\/main",
             "opts": "-fdiagnostics-color=always -Werror -g"
         },
-        "version": "0.0.0.3",
+        "version": "0.0.0.4",
         "unittestsymbol": "TESTKEY",
         "unittestlistmax": "5",
         "files": [

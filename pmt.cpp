@@ -50,7 +50,10 @@ int main1(int argc, char **argv) {
     CPI::TargetSpec target("cpi-app", "-g");
     CPI::Project project(target, {file, file2, file3});
     write_json(std::cout, project.tonode());
-    std::cout << project.compilecmd() << std::endl;
+    std::cout << project.compilecmd(file.name) << std::endl;
+    std::cout << project.compilecmd(file2.name) << std::endl;
+    std::cout << project.compilecmd(file3.name) << std::endl;
+    std::cout << project.linkcmd() << std::endl;
     // CPI::exec(project.compilecmd());
     project.save("cpi/project.json");
     return 0;
@@ -61,7 +64,7 @@ int main2(int argc, char **argv) {
     CPI::Project project("cpi/project.json");
     std::cout << "project has " << (project.haschanged() ? "" : "not ") << "changed" << std::endl;
     std::cout << "updating settings: " << std::endl;
-    project.update();
+    project.compile(true);
     std::cout << "project has " << (project.haschanged() ? "" : "not ") << "changed" << std::endl;
     project.save("cpi/project.json");
     return 0;
@@ -74,49 +77,10 @@ int main3(int argc, char **argv) {
     project.addfile("cpi/exec.cpp");
     project.spec.opts = "-fdiagnostics-color=always -Werror -g -DBOOST_BIND_GLOBAL_PLACEHOLDERS -lboost_program_options";
     project.save("cpi/project.json");
-    project.compile();
+    project.build(true);
     project.save("cpi/project.json");
     return 0;
 }
-
-/*int main4(int argc, char **argv) {
-    /*buggy: the multi value keywords throw 
-      what():  boost::bad_any_cast: failed conversion using boost::any_cast
-      * /
-    options_description descr("CPI - code project interface - description: allowed parameters");
-    descr.add_options()
-    ("help", "a very useful pleh message")
-    ("new", value<std::string>(), "create a new structure or project specification.\nSyntax: --new (structure|project)")
-    ("in", value<std::vector<std::string>>()->multitoken(), "Give a structure/project as reference\nSyntax: --in application library1\nExample: --in main lib --add filename.cpp")
-    // ("add", value<std::vector<std::string>>()->multitoken(), "describes objects to be added to a given (->in) parent object.")
-    ;
-
-    variables_map m;
-    store(parse_command_line(argc, argv, descr), m);
-    notify(m);
-
-    if(m.count("help")) {
-        std::cout << descr << std::endl;
-    }
-
-    if(m.count("new")) {
-        std::string value = m["new"].as<std::string>();
-        if(!value.compare("project")) {
-            throw CPI::CPIException({"new ", value, " not implemented."});
-        }
-        else
-            throw CPI::CPIException({"new ", value, " not implemented."});
-    }
-
-    if(m.count("in")) {
-        auto values = m["new"].as<std::vector<std::string>>();
-
-        std::cout << "read: in\n";
-        for(auto& value : values)
-            std::cout << value << "\n";
-    }
-    return 0;
-}*/
 
 int main5(int argc, char **argv) {
     CPI::Solution solution("cpi/solution.json");

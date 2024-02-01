@@ -5,7 +5,7 @@ CPI::File::File() {}
 CPI::File::File(std::string name) : name(name) {
     std::stringstream cmd;
     cmd << "md5sum " << this->name;
-    hash = exec(cmd.str().c_str()).substr(0, 32);
+    hash = std::get<0>(exec(cmd.str().c_str())).substr(0, 32);
 }
 
 CPI::File::File(std::string name, std::string hash) : name(name), hash(hash) { }
@@ -14,10 +14,15 @@ bool CPI::File::haschanged() {
     if(name.empty())
         throw CPIException({"file has invalid name (empty)"});
 
+    // add check: existence of corresponding object file
+
     std::stringstream cmd;
-    cmd << "md5sum " << this->name;
-    std::string newhash = exec(cmd.str().c_str()).substr(0, 32);
-    return hash.compare(newhash);
+    cmd << "md5sum " << name;
+    std::string newhash = std::get<0>(exec(cmd.str().c_str())).substr(0, 32);
+
+    std::stringstream ofile;
+    ofile << "build/" << name << ".o";
+    return hash.compare(newhash) || !std::filesystem::exists(ofile.str());
 }
 
 ptree CPI::File::tonode() {
@@ -78,7 +83,7 @@ void CPI::Project::addfile(std::string filename) {
 }
 
 bool CPI::Project::haschanged() {
-    bool did = spec.haschanged();
+    bool did = spec.haschanged() || !std::filesystem::exists(spec.name);
     for(auto& file : files)
         did |= file.haschanged();
         if(did)
@@ -86,7 +91,60 @@ bool CPI::Project::haschanged() {
     return false;
 }
 
-std::string CPI::Project::compilecmd(int unittestnr) {
+std::string CPI::Project::compilecmd(std::string filename, int unittestnr) {
+
+    std::stringstream ofile;
+    ofile << "build/" << filename << ".o";
+
+    std::filesystem::path path(ofile.str());
+    auto parentdir = path.parent_path();
+    if(!std::filesystem::exists(parentdir))
+        std::filesystem::create_directories(parentdir);
+
+    std::stringstream s;
+    s << "g++ -c " << filename << " -o " << ofile.str() << " ";
+    s << spec.opts;
+
+    if(unittestnr > 0) {
+        s << " -D" << unittestsymbol << unittestnr;
+    }
+    else {
+        s << " -D" << "MAIN";
+    }
+    return s.str();
+}
+
+bool CPI::Project::compile(bool force, int unittestnr)
+{
+    for(auto& file : files) {
+        // if header => skip
+        if(file.name.find(".h") != std::string::npos || file.name.find(".hpp") != std::string::npos || file.name.find(".hxx") != std::string::npos)
+            continue;
+
+        if(!force)
+            if(!file.haschanged())
+                continue;
+
+        auto s = compilecmd(file.name, unittestnr);
+        if(unittestsymbol.size() > 0)
+            std::cout << "[compiling \033[92m" << spec.name << "-ut" << unittestnr << "\033[37m]:\n" << s << std::endl;
+        else
+            std::cout << "[compiling \033[92m" << spec.name << "\033[37m]:\n" << s << std::endl;
+        
+        // <1> = exit code, if(exitcode) => caught error
+        if(std::get<1>(exec(s))) {
+            return false;
+        }
+
+        std::stringstream hashing;
+        hashing << "md5sum " << file.name;
+        file.hash = std::get<0>(exec(hashing.str().c_str())).substr(0, 32);
+    }
+    return true;
+}
+
+std::string CPI::Project::linkcmd(int unittestnr)
+{
     std::stringstream s;
     s << "g++ -o ";
     if(unittestnr == 0) { // regular compilation
@@ -96,8 +154,13 @@ std::string CPI::Project::compilecmd(int unittestnr) {
         s << spec.name << "-ut" << unittestnr << " ";
     }
     
-    for(auto& file : files)
-        s << file.name << " ";
+    for(auto& file : files) {
+        // if header
+        if(file.name.find(".h") != std::string::npos || file.name.find(".hpp") != std::string::npos || file.name.find(".hxx") != std::string::npos)
+            s << file.name << " ";
+        else // or source
+            s << "build/" << file.name << ".o ";
+    }
     s << spec.opts;
 
     if(unittestnr > 0) {
@@ -110,35 +173,28 @@ std::string CPI::Project::compilecmd(int unittestnr) {
     return s.str();
 }
 
-void CPI::Project::compile() {
+bool CPI::Project::link(int unittestnr)
+{
+    std::string s = linkcmd(unittestnr);
+    if(unittestsymbol.size() > 0)
+        std::cout << "[linking \033[92m" << spec.name << "-ut" << unittestnr << "\033[37m]:\n" << s << std::endl;
+    else
+        std::cout << "[linking \033[92m" << spec.name << "\033[37m]:\n" << s << std::endl;
+    
+    return !std::get<1>(exec(s));
+}
+
+bool CPI::Project::build(bool force) {
     vBuild++;
 
     int bnd = unittestsymbol.size() > 0 ? unittestlistmax : 0;
     for(size_t i = 0; i <= bnd; i++) {
-        std::string s = compilecmd(i);
-        if(unittestsymbol.size() > 0)
-            std::cout << "exec unittest compilation" 
-                << i << ": \n" << s << std::endl;
-        else
-            std::cout << "exec app compilation: \n" << s << std::endl;
-        exec(s);
+        if(!compile(force, i))
+            return false;
+        if(!link(i))
+            return false;
     }
-    update();
-}
-
-void CPI::Project::update() {
-    std::vector<std::string> u;
-    for(unsigned i = 0; i < files.size(); i++)
-    {
-        auto file = files[i];
-        if(file.haschanged()) {
-            u.push_back(file.name);
-            files.erase(files.begin()+i);
-            --i;
-        }
-    }
-    for(auto& filename : u)
-        files.push_back(File(filename));
+    return true;
 }
 
 ptree CPI::Project::tonode() {
@@ -269,15 +325,6 @@ bool CPI::Solution::haschanged() {
     return did;
 }
 
-void CPI::Solution::update() {
-    for(auto& p : projects)
-        p.update();
-}
-
-std::string CPI::Solution::compilecmd() {
-    return mainapp.compilecmd();
-}
-
 ptree CPI::Solution::tonode() {
     ptree node;
     node.put_child("mainapp", mainapp.tonode());
@@ -314,14 +361,18 @@ void CPI::Solution::load() {
 void CPI::Solution::compile(bool force) {
     for(auto& p : projects)
         if(p.haschanged() || force) {
-            p.compile();
+            bool result = p.build(force);
             std::ofstream fout(solutionfilename);
             write_json(fout, tonode());
+            if(!result)
+                return;
         }
     if(mainapp.haschanged() || force) {
-        mainapp.compile();
+        bool result = mainapp.build(force);
         std::ofstream fout(solutionfilename);
         write_json(fout, tonode());
+            if(!result)
+                return;
     }
 }
 

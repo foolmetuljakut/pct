@@ -1,14 +1,24 @@
 #include "exec.hpp"
 
-std::string CPI::exec(std::string cmd) {
+std::tuple<std::string, int> CPI::exec(std::string cmd) {
+    int exitcode = 0;
     std::array<char, 128> buffer;
     std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-    if (!pipe) {
+
+    FILE *pipe = popen(cmd.c_str(), "r");
+    if (pipe == nullptr) {
         throw std::runtime_error("popen() failed!");
     }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
+    try {
+        std::size_t bytesread;
+        while ((bytesread = std::fread(buffer.data(), sizeof(buffer.at(0)), sizeof(buffer), pipe)) != 0) {
+            result += std::string(buffer.data(), bytesread);
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
     }
-    return result;
+    
+    exitcode = WEXITSTATUS(pclose(pipe));
+    return std::make_tuple(result, exitcode);
 }

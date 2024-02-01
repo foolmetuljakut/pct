@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/pmt",
-            "args": ["-spt", "build/main", "-o", "-fdiagnostics-color=always -Werror -g", "-f", "build/main.cpp", "-u", "TESTKEY", "-l", "5"],
+            "args": ["-fe", "testproject/main.json"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

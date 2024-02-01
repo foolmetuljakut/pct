@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <exception>
+#include <filesystem>
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -76,9 +77,11 @@ namespace CPI {
         Project(TargetSpec& spec, std::vector<File>& files);
         void addfile(std::string filename);
         bool haschanged();
-        std::string compilecmd(int unittestnr = 0);
-        void compile();
-        void update();
+        std::string compilecmd(std::string filename, int unittestnr = 0);
+        bool compile(bool force, int unittestnr = 0);
+        std::string linkcmd(int unittestnr = 0);
+        bool link(int unittestnr = 0);
+        bool build(bool force);
         void save(std::string filename);
         void load(std::string filename);
         ptree tonode();
@@ -103,8 +106,6 @@ namespace CPI {
             std::vector<std::string>& files);
         void addsubproject(Project &project);
         bool haschanged();
-        void update();
-        std::string compilecmd();
         ptree tonode();
         void save();
         void load();
