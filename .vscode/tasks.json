@@ -2,9 +2,9 @@
     "version":"2.0.0",
     "tasks": [
         {
-            "label": "g++ via comp.sh",
-            "command": "./comp.sh", // Could be any other shell command
-            "args": [],
+            "label": "g++ via pmt",
+            "command": "./pmt", // Could be any other shell command
+            "args": ["-e", "pmt.json"],
             "type": "shell"
         }
     ]

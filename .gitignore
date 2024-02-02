@@ -1,5 +1,6 @@
 *.gch
 pmt
+pmt-0.5.0
 .vscode/settings.json
 build/main
 build/main2
