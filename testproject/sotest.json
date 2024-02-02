@@ -2,9 +2,10 @@
     "mainapp": {
         "target": {
             "name": "build\/sotest",
-            "opts": "-fdiagnostics-color=always -Werror -g -lsolib -L build\/"
+            "compilerflags": "-fdiagnostics-color=always -Werror -g",
+            "linkerflags": "-lsolib -L build\/"
         },
-        "version": "0.0.0.6",
+        "version": "0.0.0.7",
         "files": [
             {
                 "name": "testproject\/solib.hpp",
@@ -20,9 +21,10 @@
         {
             "target": {
                 "name": "build\/libsolib.so",
-                "opts": "-fdiagnostics-color=always -Werror -g -fpic -shared"
+                "compilerflags": "-fdiagnostics-color=always -Werror -g -fpic -shared",
+                "linkerflags": ""
             },
-            "version": "0.0.0.15",
+            "version": "0.0.0.16",
             "files": [
                 {
                     "name": "testproject\/solib.hpp",

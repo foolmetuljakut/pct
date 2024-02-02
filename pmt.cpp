@@ -47,7 +47,7 @@ int main1(int argc, char **argv) {
     CPI::File file("cpi/cpi.cpp");
     CPI::File file2("cpi/structure.hpp");
     CPI::File file3("cpi/structure.cpp");
-    CPI::TargetSpec target("cpi-app", "-g");
+    CPI::TargetSpec target("cpi-app", "-g", "");
     CPI::Project project(target, {file, file2, file3});
     write_json(std::cout, project.tonode());
     std::cout << project.compilecmd(file.name) << std::endl;
@@ -85,7 +85,7 @@ int main3(int argc, char **argv) {
 int main5(int argc, char **argv) {
     CPI::Solution solution("cpi/solution.json");
     solution.load();
-    solution.compile(true);
+    solution.build(true);
     return 0;
 }
 
@@ -93,10 +93,10 @@ enum ArgumentMode {
     DECL_STRUCTURE,
     DECL_PROJECT,
     DECL_TARGETNAME,
-    LIST_OPTIONS,
+    COMPILER_OPTIONS,
+    LINKER_OPTIONS,
     LIST_FILES,
-    UNITTEST_SYMBOL,
-    UNITTEST_LISTMAX
+    UNITTEST_SYMBOL
 };
 
 void separateoptions(std::string& arg, std::vector<std::string>& args) {
@@ -117,11 +117,11 @@ void separateoptions(std::string& arg, std::vector<std::string>& args) {
         "   --structure|-s opens a new structure and subs every following command to the last declared structure\n \
         --project|-p opens a new project and subs every following command .... bla\n \
         --target|-t expects the name of the project target\n \
-        --options|-o opens a list of options and subs every following command .... bla\n \
+        --compiler-options|-c opens a list of compiler options and subs every following command .... bla\n \
+        --linker-options|-l opens a list of linker options and subs every following command .... bla\n \
         --files|-f opens a list of files and subs .... you get the idea\n \
         --unittest-symbol|-u defines an in-code preprocessor symbol that is unique in the unittest application\n \
-        \twhile the main application gets passed the unique symbol MAIN\n \
-        --unittest-listmax|-l defines the number of unittest applications" << std::endl;
+        \twhile the main application gets passed the unique symbol MAIN" << std::endl;
     }
     else {
         args.push_back(arg);
@@ -138,7 +138,7 @@ void fe_execution(std::vector<std::string>& args) {
                 CPI::Solution s(fn);
                 s.load();
                 if(s.haschanged() || fe) {
-                    s.compile(fe);
+                    s.build(fe);
                     s.save();
                 }
                 else {
@@ -189,35 +189,51 @@ int main(int argc, char **argv) {
             }
             else
                 throw CPI::CPIException({"currently not in mode (", 
-                mode == 0 ? "decl. struct." : (
-                mode == 1 ? "decl. proj" : (
-                mode == 2 ? "decl. target" : (
-                mode == 3 ? "decl. options" : "decl. files"
-                ))), ") to accept a target name"});
+                    mode == 0 ? "decl. struct." : (
+                    mode == 1 ? "decl. proj" : (
+                    mode == 2 ? "decl. target" : (
+                    mode == 3 ? "comp. options" : (
+                    mode == 4 ? "link. options" : "decl. files"
+                )))), ") to accept a target name"});
         }
-        if(!std::string("-o").compare(arg) || !std::string("--options").compare(arg)) {
+        if(!std::string("-c").compare(arg) || !std::string("--compiler-options").compare(arg)) {
             if(mode >= DECL_TARGETNAME) {
-                mode = LIST_OPTIONS;
+                mode = COMPILER_OPTIONS;
                 expecting = false;
             } else
                 throw CPI::CPIException({"currently not in mode (", 
-                mode == 0 ? "decl. struct." : (
-                mode == 1 ? "decl. proj" : (
-                mode == 2 ? "decl. target" : (
-                mode == 3 ? "decl. options" : "decl. files"
-                ))), ") to accept a list of options"});
+                    mode == 0 ? "decl. struct." : (
+                    mode == 1 ? "decl. proj" : (
+                    mode == 2 ? "decl. target" : (
+                    mode == 3 ? "comp. options" : (
+                    mode == 4 ? "link. options" : "decl. files"
+                )))), ") to accept a list of options"});
+        }
+        if(!std::string("-l").compare(arg) || !std::string("--linker-options").compare(arg)) {
+            if(mode >= DECL_TARGETNAME) { // can be skipped, compiler flags then remain empty
+                mode = LINKER_OPTIONS;
+                expecting = false;
+            } else
+                throw CPI::CPIException({"currently not in mode (", 
+                    mode == 0 ? "decl. struct." : (
+                    mode == 1 ? "decl. proj" : (
+                    mode == 2 ? "decl. target" : (
+                    mode == 3 ? "comp. options" : (
+                    mode == 4 ? "link. options" : "decl. files"
+                )))), ") to accept a list of options"});
         }
         if(!std::string("-f").compare(arg) || !std::string("--files").compare(arg)) {
-            if(mode >= LIST_OPTIONS) {
+            if(mode >= DECL_TARGETNAME) { // can be skipped, linker flags then remain empty
                 mode = LIST_FILES;
                 expecting = false;
             } else
                 throw CPI::CPIException({"currently not in mode (", 
-                mode == 0 ? "decl. struct." : (
-                mode == 1 ? "decl. proj" : (
-                mode == 2 ? "decl. target" : (
-                mode == 3 ? "decl. options" : "decl. files"
-                ))), ") to accept a list of files"});
+                    mode == 0 ? "decl. struct." : (
+                    mode == 1 ? "decl. proj" : (
+                    mode == 2 ? "decl. target" : (
+                    mode == 3 ? "comp. options" : (
+                    mode == 4 ? "link. options" : "decl. files"
+                )))), ") to accept a list of files"});
         }
         if(!std::string("-u").compare(arg) || !std::string("--unittest-symbol").compare(arg)) {
             if(mode >= LIST_FILES) {
@@ -225,26 +241,14 @@ int main(int argc, char **argv) {
                 expecting = false;
             } else
                 throw CPI::CPIException({"currently not in mode (", 
-                mode == 0 ? "decl. struct." : (
-                mode == 1 ? "decl. proj" : (
-                mode == 2 ? "decl. target" : (
-                mode == 3 ? "decl. options" : "decl. files"
-                ))), ") to accept a list of files"}); 
+                    mode == 0 ? "decl. struct." : (
+                    mode == 1 ? "decl. proj" : (
+                    mode == 2 ? "decl. target" : (
+                    mode == 3 ? "comp. options" : (
+                    mode == 4 ? "link. options" : "decl. files"
+                )))), ") to accept a list of files"}); 
         }
-        if(!std::string("-l").compare(arg) || !std::string("--unittest-listmax").compare(arg)) {
-            if(mode >= UNITTEST_SYMBOL) {
-                mode = UNITTEST_LISTMAX;
-                expecting = false;
-            } else
-                throw CPI::CPIException({"currently not in mode (", 
-                mode == 0 ? "decl. struct." : (
-                mode == 1 ? "decl. proj" : (
-                mode == 2 ? "decl. target" : (
-                mode == 3 ? "decl. options" : "decl. files"
-                ))), ") to accept a list of files"});
-            
-        }
-
+        
         /*processing depending on mode*/
         switch(mode) {
             case DECL_STRUCTURE:
@@ -283,37 +287,43 @@ int main(int argc, char **argv) {
                     expecting = true;
                 }
                 break;
-            case LIST_OPTIONS:
+            case COMPILER_OPTIONS:
                 if(expecting) {
                     std::stringstream ss;
                     ss << currentproject->spec.opts << (currentproject->spec.opts.size() > 0 ? " " : "") << arg;
                     currentproject->spec.opts = ss.str();
                 }
-                else
+                else {
+                    std::cout << "adding to compiler options" << std::endl;
                     expecting = true;
+                }
+                break;
+            case LINKER_OPTIONS:
+                if(expecting) {
+                    std::stringstream ss;
+                    ss << currentproject->spec.lflags << (currentproject->spec.lflags.size() > 0 ? " " : "") << arg;
+                    currentproject->spec.lflags = ss.str();
+                }
+                else {
+                    std::cout << "adding to linker options" << std::endl;
+                    expecting = true;
+                }
                 break;
             case LIST_FILES:
                 if(expecting)
                     currentproject->addfile(arg);
-                else
+                else {
+                    std::cout << "adding to file list" << std::endl;
                     expecting = true;
+                }
                 break;
             case UNITTEST_SYMBOL:
                 if(expecting)
                     currentproject->unittestsymbol = arg;
-                else
+                else {
+                    std::cout << "adding to unittest symbol" << std::endl;
                     expecting = true;
-                break;
-            case UNITTEST_LISTMAX:
-                if(expecting)
-                    try {
-                        currentproject->unittestlistmax = std::stoi(arg); 
-                    }
-                    catch(std::invalid_argument& e) {
-                        throw CPI::CPIException({"could not convert \"", arg, "\" to a unittest list max integer. terminating."});
-                    }
-                else
-                    expecting = true;
+                }
                 break;
             default:
                 throw CPI::CPIException({"can't accept ", arg, " while expecting ",

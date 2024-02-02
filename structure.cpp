@@ -21,8 +21,25 @@ bool CPI::File::haschanged() {
     std::string newhash = std::get<0>(exec(cmd.str().c_str())).substr(0, 32);
 
     std::stringstream ofile;
-    ofile << "build/" << name << ".o";
+    if(issource()) {
+        ofile << "build/" << name << ".o";
+    }
+    else {
+        ofile << name << ".gch";
+    }
     return hash.compare(newhash) || !std::filesystem::exists(ofile.str());
+}
+
+bool CPI::File::isheader() const
+{
+    return name.find(".h") != std::string::npos || 
+            name.find(".hpp") != std::string::npos || 
+            name.find(".hxx") != std::string::npos;
+}
+
+bool CPI::File::issource() const
+{
+    return !isheader();
 }
 
 ptree CPI::File::tonode() {
@@ -34,7 +51,8 @@ ptree CPI::File::tonode() {
 
 CPI::TargetSpec::TargetSpec() {}
 
-CPI::TargetSpec::TargetSpec(std::string name, std::string opts) : name(name), opts(opts) {}
+CPI::TargetSpec::TargetSpec(std::string name, std::string opts, std::string lflags) 
+    : name(name), opts(opts), lflags(lflags) {}
 
 bool CPI::TargetSpec::haschanged() {
     return false;
@@ -43,7 +61,8 @@ bool CPI::TargetSpec::haschanged() {
 ptree CPI::TargetSpec::tonode() {
     ptree node;
     node.put("name", this->name);
-    node.put("opts", this->opts);
+    node.put("compilerflags", this->opts);
+    node.put("linkerflags", this->lflags);
     return node;
 }
 
@@ -91,19 +110,25 @@ bool CPI::Project::haschanged() {
     return false;
 }
 
-std::string CPI::Project::compilecmd(std::string filename, int unittestnr) {
+std::string CPI::Project::compilecmd(const File& file, int unittestnr) {
+
+    std::stringstream s;
 
     std::stringstream ofile;
-    ofile << "build/" << filename << ".o";
+    ofile << "build/" << file.name << ".o";
 
     std::filesystem::path path(ofile.str());
     auto parentdir = path.parent_path();
     if(!std::filesystem::exists(parentdir))
         std::filesystem::create_directories(parentdir);
 
-    std::stringstream s;
-    s << "g++ -c " << filename << " -o " << ofile.str() << " ";
-    s << spec.opts;
+    if(file.issource()) {
+        s << "g++ -c " << file.name << " -o " << ofile.str();
+    } else {
+        s << "g++ " << file.name;
+    }
+
+    s << " " << spec.opts;
 
     if(unittestnr > 0) {
         s << " -D" << unittestsymbol << unittestnr;
@@ -111,21 +136,18 @@ std::string CPI::Project::compilecmd(std::string filename, int unittestnr) {
     else {
         s << " -D" << "MAIN";
     }
+
     return s.str();
 }
 
 bool CPI::Project::compile(bool force, int unittestnr)
 {
     for(auto& file : files) {
-        // if header => skip
-        if(file.name.find(".h") != std::string::npos || file.name.find(".hpp") != std::string::npos || file.name.find(".hxx") != std::string::npos)
-            continue;
-
         if(!force)
             if(!file.haschanged())
                 continue;
 
-        auto s = compilecmd(file.name, unittestnr);
+        auto s = compilecmd(file, unittestnr);
         if(unittestsymbol.size() > 0)
             std::cout << "[compiling \033[92m" << spec.name << "-ut" << unittestnr << "\033[37m]:\n" << s << std::endl;
         else
@@ -155,13 +177,13 @@ std::string CPI::Project::linkcmd(int unittestnr)
     }
     
     for(auto& file : files) {
-        // if header
-        if(file.name.find(".h") != std::string::npos || file.name.find(".hpp") != std::string::npos || file.name.find(".hxx") != std::string::npos)
+        if(file.isheader()) {
             s << file.name << " ";
-        else // or source
+        } else {
             s << "build/" << file.name << ".o ";
+        }
     }
-    s << spec.opts;
+    s << spec.opts << " " << spec.lflags;
 
     if(unittestnr > 0) {
         s << " -D" << unittestsymbol << unittestnr;
@@ -257,8 +279,9 @@ void CPI::Project::fromnode(ptree& node) {
     }
 
     std::string name = node.get<std::string>("target.name"),
-                opts = node.get<std::string>("target.opts");
-    spec = TargetSpec(name, opts);
+                compilerflags = node.get<std::string>("target.compilerflags"),
+                linkerflags = node.get<std::string>("target.linkerflags");
+    spec = TargetSpec(name, compilerflags, linkerflags);
     for( auto& file : node.get_child("files")) {
         std::string name = file.second.get<std::string>("name"),
                     hash = file.second.get<std::string>("hash");
@@ -289,10 +312,10 @@ CPI::Solution::Solution(std::string solutionfilename, Project main)  :
 }
 
 CPI::Solution::Solution(std::string solutionfilename, 
-    std::string name, std::string opts, 
+    std::string name, std::string compilerflags, std::string linkerflags, 
     std::initializer_list<std::string>& files) :
     solutionfilename(solutionfilename) {
-    TargetSpec target(name, opts);
+    TargetSpec target(name, compilerflags, linkerflags);
     std::vector<File> fs;
     std::transform(files.begin(), files.end(), fs.begin(),
         [](std::string file) {
@@ -302,10 +325,10 @@ CPI::Solution::Solution(std::string solutionfilename,
 }
 
 CPI::Solution::Solution(std::string solutionfilename, 
-    std::string name, std::string opts, 
+    std::string name, std::string compilerflags, std::string linkerflags, 
     std::vector<std::string>& files) :
     solutionfilename(solutionfilename)  {
-    TargetSpec target(name, opts);
+    TargetSpec target(name, compilerflags, linkerflags);
     std::vector<File> fs;
     std::transform(files.begin(), files.end(), fs.begin(),
         [](std::string file) {
@@ -358,7 +381,7 @@ void CPI::Solution::load() {
     }
 }
 
-void CPI::Solution::compile(bool force) {
+void CPI::Solution::build(bool force) {
     for(auto& p : projects)
         if(p.haschanged() || force) {
             bool result = p.build(force);

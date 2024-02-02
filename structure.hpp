@@ -36,6 +36,8 @@ namespace CPI {
         std::string name;
         std::string hash;
         bool haschanged();
+        bool isheader() const;
+        bool issource() const;
         File();
         File(std::string name);
         File(std::string name, std::string hash);
@@ -46,8 +48,9 @@ namespace CPI {
     public:
         std::string name;
         std::string opts;
+        std::string lflags;
         TargetSpec();
-        TargetSpec(std::string name, std::string opts);
+        TargetSpec(std::string name, std::string opts, std::string lflags);
         /*
             target name
             other target config
@@ -77,7 +80,7 @@ namespace CPI {
         Project(TargetSpec& spec, std::vector<File>& files);
         void addfile(std::string filename);
         bool haschanged();
-        std::string compilecmd(std::string filename, int unittestnr = 0);
+        std::string compilecmd(const File& file, int unittestnr = 0);
         bool compile(bool force, int unittestnr = 0);
         std::string linkcmd(int unittestnr = 0);
         bool link(int unittestnr = 0);
@@ -100,16 +103,18 @@ namespace CPI {
         Solution();
         Solution(std::string solutionfilename);
         Solution(std::string solutionfilename, Project main);
-        Solution(std::string solutionfilename, std::string name, std::string opts, 
+        Solution(std::string solutionfilename, std::string name, 
+            std::string compilerflags, std::string linkerflags, 
             std::initializer_list<std::string>& files);
-        Solution(std::string solutionfilename, std::string name, std::string opts, 
+        Solution(std::string solutionfilename, std::string name, 
+            std::string compilerflags, std::string linkerflags, 
             std::vector<std::string>& files);
         void addsubproject(Project &project);
         bool haschanged();
         ptree tonode();
         void save();
         void load();
-        void compile(bool force);
+        void build(bool force);
 
     };
 };

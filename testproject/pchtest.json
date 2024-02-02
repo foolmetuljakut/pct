@@ -1,0 +1,20 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "build\/pchtest",
+            "compilerflags": "-H -fdiagnostics-color=always -Werror -g",
+            "linkerflags": ""
+        },
+        "version": "0.0.0.5",
+        "files": [
+            {
+                "name": "testproject\/pchtest.cpp",
+                "hash": "3e037ea54e6496915e0bcef0ae7b28be"
+            },
+            {
+                "name": "testproject\/pch.hpp",
+                "hash": "1a0052826c50aaa364d717d52b51339a"
+            }
+        ]
+    }
+}

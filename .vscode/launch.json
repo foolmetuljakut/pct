@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/pmt",
-            "args": ["-fe", "testproject/main.json"],
+            "args": ["-fe", "testproject/sotest.json"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

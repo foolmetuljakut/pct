@@ -2,8 +2,10 @@
     "mainapp": {
         "target": {
             "name": "tests\/testpr",
-            "opts": "-Wall"
+            "compilerflags": "-Wall",
+            "linkerflags": ""
         },
+        "version": "0.0.0.1",
         "unittestsymbol": "TEST",
         "unittestlistmax": "2",
         "files": [
