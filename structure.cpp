@@ -258,12 +258,15 @@ void CPI::Project::fromnode(ptree& node) {
             switch(ctr) {
                 case 0:
                     vMajor = n;
+                    ctr++;
                     break;
                 case 1:
                     vMinor = n;
+                    ctr++;
                     break;
                 case 2:
                     vPatch = n;
+                    ctr++;
                     break;
                 default:
                     throw CPIException({"what the fuck is happening with your version?! ", node.get<std::string>("version")});

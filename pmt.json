@@ -1,0 +1,32 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "pmt-0.5.0",
+            "compilerflags": "-fdiagnostics-color=always -Werror -Wfatal-errors -g -DBOOST_BIND_GLOBAL_PLACEHOLDERS",
+            "linkerflags": ""
+        },
+        "version": "0.5.0.4",
+        "files": [
+            {
+                "name": "pmt.cpp",
+                "hash": "4e4dc6f69790e66e2c3bca0860e50133"
+            },
+            {
+                "name": "structure.hpp",
+                "hash": "bbc64f38f402b06a431ce93defe45f31"
+            },
+            {
+                "name": "structure.cpp",
+                "hash": "5af07a38b86dbd973695827d3d6ef263"
+            },
+            {
+                "name": "exec.hpp",
+                "hash": "fe56fdbce531c5d41784c35fbd5ff9e4"
+            },
+            {
+                "name": "exec.cpp",
+                "hash": "7b940bc9fdbb95b1868a3dec5572509a"
+            }
+        ]
+    }
+}
