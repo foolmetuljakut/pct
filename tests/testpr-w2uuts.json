@@ -1,0 +1,18 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "tests\/testpr",
+            "compilerflags": "-Wall",
+            "linkerflags": ""
+        },
+        "version": "0.2.0.5",
+        "unittestsymbol": "TEST",
+        "unittestlistmax": "2",
+        "files": [
+            {
+                "name": "tests\/testpr-w2uuts.cpp",
+                "hash": "41ef60cd5ea07fd93d65a647904a875b"
+            }
+        ]
+    }
+}

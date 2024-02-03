@@ -12,6 +12,7 @@ build/sotest
 build/pchtest
 
 tests/testpr
+tests/sotest
 tests/testpr-ut1
 tests/testpr-ut2
 tests/__pycache__

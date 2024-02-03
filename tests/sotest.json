@@ -1,0 +1,40 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "sotest",
+            "compilerflags": "-fdiagnostics-color=always -Werror -g",
+            "linkerflags": "-lsolib -L .\/"
+        },
+        "version": "0.0.0.11",
+        "files": [
+            {
+                "name": "solib.hpp",
+                "hash": "2e183b50b288d12b216b8b5a5386df7d"
+            },
+            {
+                "name": "sotest.cpp",
+                "hash": "6f42a68d9b811a9ab0e2b95efd5455b7"
+            }
+        ]
+    },
+    "projects": [
+        {
+            "target": {
+                "name": "libsolib.so",
+                "compilerflags": "-fdiagnostics-color=always -Werror -g -fpic -shared",
+                "linkerflags": ""
+            },
+            "version": "0.0.0.19",
+            "files": [
+                {
+                    "name": "solib.hpp",
+                    "hash": "2e183b50b288d12b216b8b5a5386df7d"
+                },
+                {
+                    "name": "solib.cpp",
+                    "hash": "7915c5aa9391bcf0b7b5cf0bc28b5c87"
+                }
+            ]
+        }
+    ]
+}
