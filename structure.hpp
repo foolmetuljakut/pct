@@ -35,7 +35,7 @@ namespace CPI {
     public:
         std::string name;
         std::string hash;
-        bool haschanged();
+        bool haschanged(int unittestnr);
         bool isheader() const;
         bool issource() const;
         File();

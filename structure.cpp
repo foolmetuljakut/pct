@@ -10,7 +10,7 @@ CPI::File::File(std::string name) : name(name) {
 
 CPI::File::File(std::string name, std::string hash) : name(name), hash(hash) { }
 
-bool CPI::File::haschanged() {
+bool CPI::File::haschanged(int unittestnr) {
     if(name.empty())
         throw CPIException({"file has invalid name (empty)"});
 
@@ -22,7 +22,7 @@ bool CPI::File::haschanged() {
 
     std::stringstream ofile;
     if(issource()) {
-        ofile << "build/" << name << ".o";
+        ofile << "build/" << name << "." << unittestnr << ".o";
     }
     else {
         ofile << name << ".gch";
@@ -104,7 +104,8 @@ void CPI::Project::addfile(std::string filename) {
 bool CPI::Project::haschanged() {
     bool did = spec.haschanged() || !std::filesystem::exists(spec.name);
     for(auto& file : files)
-        did |= file.haschanged();
+        for(int unittestnr = 0; unittestnr < unittestlistmax; unittestnr++)
+            did |= file.haschanged(unittestnr);
         if(did)
             return true;
     return false;
@@ -115,7 +116,7 @@ std::string CPI::Project::compilecmd(const File& file, int unittestnr) {
     std::stringstream s;
 
     std::stringstream ofile;
-    ofile << "build/" << file.name << ".o";
+    ofile << "build/" << file.name << "." << unittestnr << ".o";
 
     std::filesystem::path path(ofile.str());
     auto parentdir = path.parent_path();
@@ -144,7 +145,7 @@ bool CPI::Project::compile(bool force, int unittestnr)
 {
     for(auto& file : files) {
         if(!force)
-            if(!file.haschanged())
+            if(!file.haschanged(unittestnr))
                 continue;
 
         auto s = compilecmd(file, unittestnr);
@@ -180,7 +181,7 @@ std::string CPI::Project::linkcmd(int unittestnr)
         if(file.isheader()) {
             s << file.name << " ";
         } else {
-            s << "build/" << file.name << ".o ";
+            s << "build/" << file.name << "." << unittestnr << ".o ";
         }
     }
     s << spec.opts << " " << spec.lflags;
