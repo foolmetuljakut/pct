@@ -5,7 +5,7 @@
             "compilerflags": "-H -fdiagnostics-color=always -Werror -g",
             "linkerflags": ""
         },
-        "version": "0.0.0.7",
+        "version": "0.0.0.8",
         "files": [
             {
                 "name": "pchtest.cpp",
