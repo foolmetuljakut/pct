@@ -2,7 +2,7 @@
 *.o
 *.so
 pmt
-pmt-0.5.0
+pmt-*
 .vscode/settings.json
 build/main
 build/main2

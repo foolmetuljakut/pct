@@ -103,11 +103,16 @@ void CPI::Project::addfile(std::string filename) {
 
 bool CPI::Project::haschanged() {
     bool did = spec.haschanged() || !std::filesystem::exists(spec.name);
-    for(auto& file : files)
-        for(int unittestnr = 0; unittestnr < unittestlistmax; unittestnr++)
-            did |= file.haschanged(unittestnr);
+    for(auto& file : files) {
+        if (unittestlistmax > 0) {
+            for(int unittestnr = 0; unittestnr < unittestlistmax; unittestnr++)
+                did |= file.haschanged(unittestnr);
+        } else {
+            did |= file.haschanged(0);
+        }
         if(did)
             return true;
+    }
     return false;
 }
 

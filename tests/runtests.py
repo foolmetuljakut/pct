@@ -24,6 +24,3 @@ def test4():
 def test5():
     # makes no use of uts, should still work
     assert Popen("./no-uts", stdout = PIPE, shell = True).communicate()[0] == b"main app\n"
-
-def test6():
-    
