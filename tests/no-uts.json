@@ -1,0 +1,16 @@
+{
+    "mainapp": {
+        "target": {
+            "name": "no-uts",
+            "compilerflags": "-fdiagnostics-color=always -Werror -g",
+            "linkerflags": ""
+        },
+        "version": "0.0.0.4",
+        "files": [
+            {
+                "name": "no-uts.cpp",
+                "hash": "a38a125e7b2fe8b4a8f4e05150e07cdc"
+            }
+        ]
+    }
+}

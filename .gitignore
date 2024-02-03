@@ -7,12 +7,12 @@ pmt-0.5.0
 build/main
 build/main2
 build/main-ut*
-build/no-uts
 build/sotest
-build/pchtest
 
 tests/testpr
 tests/sotest
+tests/no-uts
+tests/pchtest
 tests/testpr-ut1
 tests/testpr-ut2
 tests/__pycache__
