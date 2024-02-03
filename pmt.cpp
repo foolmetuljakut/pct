@@ -13,35 +13,7 @@ using boost::property_tree::ptree,
 
 #include "structure.hpp"
 
-#define CPIVERSION "0.2"
-
-/*int main0(int argc, char **argv) {
-    options_description descr("allowed");
-    descr.add_options()
-    ("help", "a very useful pleh message")
-    ("testint", value<int>(), "a test integer")
-    ;
-
-    variables_map m;
-    store(parse_command_line(argc, argv, descr), m);
-    notify(m);
-
-    if(m.count("help")) {
-        std::cout << descr << std::endl;
-        return 0;
-    }
-
-    if(m.count("testint")) {
-        std::cout << "read testint=" << m["testint"].as<int>() << std::endl;
-
-        ptree pt;
-        pt.put("testint", m["testint"].as<int>());
-        write_json(std::cout, pt );
-
-        return 0;
-    }
-    return 0;
-}*/
+#define CPIVERSION "0.5"
 
 int main1(int argc, char **argv) {
     CPI::File file("cpi/cpi.cpp");

@@ -1,4 +1,6 @@
 *.gch
+*.o
+*.so
 pmt
 pmt-0.5.0
 .vscode/settings.json
@@ -8,18 +10,10 @@ build/main-ut*
 build/no-uts
 build/sotest
 build/pchtest
-build/libsolib.so
-build/testproject/pchtest.cpp.o
-build/testproject/solib.cpp.o
-build/testproject/solib.hpp.o
-build/testproject/sotest.cpp.o
-build/testproject/main2.cpp.o
-build/tests/main.cpp.o
 
 tests/testpr
 tests/testpr-ut1
 tests/testpr-ut2
 tests/__pycache__
 
-build/testproject/main.cpp.o
 testproject/main

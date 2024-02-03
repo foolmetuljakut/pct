@@ -5,11 +5,11 @@
             "compilerflags": "-fdiagnostics-color=always -Werror -Wfatal-errors -g -DBOOST_BIND_GLOBAL_PLACEHOLDERS",
             "linkerflags": ""
         },
-        "version": "0.5.0.5",
+        "version": "0.5.1.1",
         "files": [
             {
                 "name": "pmt.cpp",
-                "hash": "4e4dc6f69790e66e2c3bca0860e50133"
+                "hash": "586b72a84d3954aca43e6f723fab0b49"
             },
             {
                 "name": "structure.hpp",
