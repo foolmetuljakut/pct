@@ -148,16 +148,18 @@ std::string CPI::Project::compilecmd(const File& file, int unittestnr) {
 
 bool CPI::Project::compile(bool force, int unittestnr)
 {
+    if(unittestlistmax > 0)
+        std::cout << "[compiling \033[92m" << spec.name << "-ut" << unittestnr << "\033[37m]:\n";
+    else
+        std::cout << "[compiling \033[92m" << spec.name << "\033[37m]:\n";
+        
     for(auto& file : files) {
         if(!force)
             if(!file.haschanged(unittestnr))
                 continue;
 
         auto s = compilecmd(file, unittestnr);
-        if(unittestsymbol.size() > 0)
-            std::cout << "[compiling \033[92m" << spec.name << "-ut" << unittestnr << "\033[37m]:\n" << s << std::endl;
-        else
-            std::cout << "[compiling \033[92m" << spec.name << "\033[37m]:\n" << s << std::endl;
+        std::cout << s << std::endl;
         
         // <1> = exit code, if(exitcode) => caught error
         if(std::get<1>(exec(s))) {
