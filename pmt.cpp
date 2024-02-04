@@ -110,8 +110,9 @@ void fe_execution(std::vector<std::string>& args) {
                 CPI::Solution s(fn);
                 s.load();
                 if(s.haschanged() || fe) {
-                    s.build(fe);
-                    s.save();
+                    bool succeeded = s.build(fe);
+                    if(!succeeded)
+                        exit(1);
                 }
                 else {
                     //throw CPI::CPIException({"solution ", fn, " up to date"});

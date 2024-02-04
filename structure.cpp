@@ -392,22 +392,23 @@ void CPI::Solution::load() {
     }
 }
 
-void CPI::Solution::build(bool force) {
+bool CPI::Solution::build(bool force) {
     for(auto& p : projects)
         if(p.haschanged() || force) {
             bool result = p.build(force);
             std::ofstream fout(solutionfilename);
             write_json(fout, tonode());
             if(!result)
-                return;
+                return false;
         }
     if(mainapp.haschanged() || force) {
         bool result = mainapp.build(force);
         std::ofstream fout(solutionfilename);
         write_json(fout, tonode());
             if(!result)
-                return;
+                return false;
     }
+    return true;
 }
 
 

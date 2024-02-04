@@ -114,7 +114,7 @@ namespace CPI {
         ptree tonode();
         void save();
         void load();
-        void build(bool force);
+        bool build(bool force);
 
     };
 };
