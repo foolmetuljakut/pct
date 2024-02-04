@@ -5,7 +5,7 @@
             "compilerflags": "-fdiagnostics-color=always -Werror -Wfatal-errors -g -DBOOST_BIND_GLOBAL_PLACEHOLDERS",
             "linkerflags": ""
         },
-        "version": "0.5.3.7",
+        "version": "0.5.3.8",
         "files": [
             {
                 "name": "pmt.cpp",
@@ -17,7 +17,7 @@
             },
             {
                 "name": "structure.cpp",
-                "hash": "11d317c72a2669167ff333d1416a718f"
+                "hash": "2a3f9ed0ce85ca4dee0b7182f3e9fd34"
             },
             {
                 "name": "exec.hpp",

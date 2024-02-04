@@ -152,7 +152,7 @@ bool CPI::Project::compile(bool force, int unittestnr)
         std::cout << "[compiling \033[92m" << spec.name << "-ut" << unittestnr << "\033[37m]:\n";
     else
         std::cout << "[compiling \033[92m" << spec.name << "\033[37m]:\n";
-        
+
     for(auto& file : files) {
         if(!force)
             if(!file.haschanged(unittestnr))
@@ -206,7 +206,7 @@ std::string CPI::Project::linkcmd(int unittestnr)
 bool CPI::Project::link(int unittestnr)
 {
     std::string s = linkcmd(unittestnr);
-    if(unittestsymbol.size() > 0)
+    if(unittestlistmax > 0)
         std::cout << "[linking \033[92m" << spec.name << "-ut" << unittestnr << "\033[37m]:\n" << s << std::endl;
     else
         std::cout << "[linking \033[92m" << spec.name << "\033[37m]:\n" << s << std::endl;
