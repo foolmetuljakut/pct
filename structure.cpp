@@ -153,6 +153,18 @@ bool CPI::Project::compile(bool force, int unittestnr)
     else
         std::cout << "[compiling \033[92m" << spec.name << "\033[37m]:\n";
 
+    // this weird construction places headers first in the list,
+    // so they get compiled earlier due to the use of PCHs
+    std::sort(files.begin(), files.end(), 
+        [](const File& lhs, const File& rhs) {
+            std::string ending = ".hpp";
+            if(std::equal(ending.rbegin(), ending.rend(), lhs.name.rbegin()))
+                return true;
+            if(std::equal(ending.rbegin(), ending.rend(), rhs.name.rbegin()))
+                return false;
+            return (bool)lhs.name.compare(rhs.name);
+        });
+
     for(auto& file : files) {
         if(!force)
             if(!file.haschanged(unittestnr))

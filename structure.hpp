@@ -7,6 +7,9 @@
 #include <fstream>
 #include <exception>
 #include <filesystem>
+#include <algorithm>
+#include <array>
+#include <functional>
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
