@@ -157,12 +157,11 @@ bool CPI::Project::compile(bool force, int unittestnr)
     // so they get compiled earlier due to the use of PCHs
     std::sort(files.begin(), files.end(), 
         [](const File& lhs, const File& rhs) {
-            std::string ending = ".hpp";
-            if(std::equal(ending.rbegin(), ending.rend(), lhs.name.rbegin()))
-                return true;
-            if(std::equal(ending.rbegin(), ending.rend(), rhs.name.rbegin()))
-                return false;
-            return (bool)lhs.name.compare(rhs.name);
+            std::string lhsEnding = lhs.name.substr(lhs.name.size()-4, 4);
+            std::string rhsEnding = rhs.name.substr(rhs.name.size()-4, 4);
+            return -lhsEnding.compare(rhsEnding); 
+            // compare returns 1 for cpp / hpp 
+            // -1 * compare => -1, sorting hpp before cpp
         });
 
     for(auto& file : files) {
