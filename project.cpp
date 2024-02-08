@@ -1,82 +1,16 @@
-#include "structure.hpp"
+#include "project.hpp"
 
-CPI::File::File() {}
+Pmt::Project::Project() : vMajor{0}, vMinor{0}, vPatch{0}, vBuild{0} {}
 
-CPI::File::File(std::string name) : name(name) {
-    std::stringstream cmd;
-    cmd << "md5sum " << this->name;
-    hash = std::get<0>(exec(cmd.str().c_str())).substr(0, 32);
-}
-
-CPI::File::File(std::string name, std::string hash) : name(name), hash(hash) { }
-
-bool CPI::File::haschanged(int unittestnr) {
-    if(name.empty())
-        throw CPIException({"file has invalid name (empty)"});
-
-    // add check: existence of corresponding object file
-
-    std::stringstream cmd;
-    cmd << "md5sum " << name;
-    std::string newhash = std::get<0>(exec(cmd.str().c_str())).substr(0, 32);
-
-    std::stringstream ofile;
-    if(issource()) {
-        ofile << "build/" << name << "." << unittestnr << ".o";
-    }
-    else {
-        ofile << name << ".gch";
-    }
-    return hash.compare(newhash) || !std::filesystem::exists(ofile.str());
-}
-
-bool CPI::File::isheader() const
-{
-    return name.find(".h") != std::string::npos || 
-            name.find(".hpp") != std::string::npos || 
-            name.find(".hxx") != std::string::npos;
-}
-
-bool CPI::File::issource() const
-{
-    return !isheader();
-}
-
-ptree CPI::File::tonode() {
-    ptree node;
-    node.put("name", this->name);
-    node.put("hash", this->hash);
-    return node;
-}
-
-CPI::TargetSpec::TargetSpec() {}
-
-CPI::TargetSpec::TargetSpec(std::string name, std::string opts, std::string lflags) 
-    : name(name), opts(opts), lflags(lflags) {}
-
-bool CPI::TargetSpec::haschanged() {
-    return false;
-}
-
-ptree CPI::TargetSpec::tonode() {
-    ptree node;
-    node.put("name", this->name);
-    node.put("compilerflags", this->opts);
-    node.put("linkerflags", this->lflags);
-    return node;
-}
-
-CPI::Project::Project() : vMajor{0}, vMinor{0}, vPatch{0}, vBuild{0} {}
-
-CPI::Project::Project(ptree& node) : vMajor{0}, vMinor{0}, vPatch{0}, vBuild{0} {
+Pmt::Project::Project(ptree& node) : vMajor{0}, vMinor{0}, vPatch{0}, vBuild{0} {
     fromnode(node);
 }
 
-CPI::Project::Project(std::string filename) {
+Pmt::Project::Project(std::string filename) {
     load(filename);
 }
 
-CPI::Project::Project(TargetSpec& spec, std::initializer_list<File> files) : spec(spec) {
+Pmt::Project::Project(TargetSpec& spec, std::initializer_list<File> files) : spec(spec) {
     for( auto& file : files)
         this->files.push_back(file);
     vMajor = 0;
@@ -85,7 +19,7 @@ CPI::Project::Project(TargetSpec& spec, std::initializer_list<File> files) : spe
     vBuild = 0;
 }
 
-CPI::Project::Project(TargetSpec& spec, std::vector<File>& files) {
+Pmt::Project::Project(TargetSpec& spec, std::vector<File>& files) {
     for( auto& file : files)
         this->files.push_back(file);
     vMajor = 0;
@@ -94,14 +28,14 @@ CPI::Project::Project(TargetSpec& spec, std::vector<File>& files) {
     vBuild = 0;
 }
 
-void CPI::Project::addfile(std::string filename) {
+void Pmt::Project::addfile(std::string filename) {
     for(auto& file : files)
         if(! file.name.compare(filename))
             return;
     files.push_back(File(filename, "00000000000000000000000000000000"));
 }
 
-bool CPI::Project::haschanged() {
+bool Pmt::Project::haschanged() {
     bool did = spec.haschanged() || !std::filesystem::exists(spec.name);
     for(auto& file : files) {
         if (unittestlistmax > 0) {
@@ -116,7 +50,7 @@ bool CPI::Project::haschanged() {
     return false;
 }
 
-std::string CPI::Project::compilecmd(const File& file, int unittestnr) {
+std::string Pmt::Project::compilecmd(const File& file, int unittestnr) {
 
     std::stringstream s;
 
@@ -146,7 +80,7 @@ std::string CPI::Project::compilecmd(const File& file, int unittestnr) {
     return s.str();
 }
 
-bool CPI::Project::compile(bool force, int unittestnr)
+bool Pmt::Project::compile(bool force, int unittestnr)
 {
     if(unittestnr > 0)
         std::cout << "[compiling \033[92m" << spec.name << "-ut" << unittestnr << "\033[37m]:\n";
@@ -184,7 +118,7 @@ bool CPI::Project::compile(bool force, int unittestnr)
     return true;
 }
 
-std::string CPI::Project::linkcmd(int unittestnr)
+std::string Pmt::Project::linkcmd(int unittestnr)
 {
     std::stringstream s;
     s << "g++ -o ";
@@ -214,7 +148,7 @@ std::string CPI::Project::linkcmd(int unittestnr)
     return s.str();
 }
 
-bool CPI::Project::link(int unittestnr)
+bool Pmt::Project::link(int unittestnr)
 {
     std::string s = linkcmd(unittestnr);
     if(unittestnr > 0)
@@ -225,7 +159,7 @@ bool CPI::Project::link(int unittestnr)
     return !std::get<1>(exec(s));
 }
 
-bool CPI::Project::build(bool force) {
+bool Pmt::Project::build(bool force) {
     vBuild++;
 
     int bnd = unittestsymbol.size() > 0 ? unittestlistmax : 0;
@@ -238,7 +172,7 @@ bool CPI::Project::build(bool force) {
     return true;
 }
 
-ptree CPI::Project::tonode() {
+ptree Pmt::Project::tonode() {
     ptree node;
     node.put_child("target", spec.tonode());
     std::stringstream version;
@@ -256,7 +190,7 @@ ptree CPI::Project::tonode() {
     return node;
 }
 
-void CPI::Project::fromnode(ptree& node) {
+void Pmt::Project::fromnode(ptree& node) {
 
     if(node.count("unittestsymbol")) {
         unittestsymbol = node.get<std::string>("unittestsymbol");
@@ -288,7 +222,7 @@ void CPI::Project::fromnode(ptree& node) {
                     ctr++;
                     break;
                 default:
-                    throw CPIException({"what the fuck is happening with your version?! ", node.get<std::string>("version")});
+                    throw PmtException({"what the fuck is happening with your version?! ", node.get<std::string>("version")});
             }
             version.erase(0, pos +1);
         }
@@ -311,120 +245,14 @@ void CPI::Project::fromnode(ptree& node) {
     }
 }
 
-void CPI::Project::save(std::string filename) {
+void Pmt::Project::save(std::string filename) {
     std::ofstream fout(filename);
     write_json(fout, tonode());
 }
 
-void CPI::Project::load(std::string filename) {
+void Pmt::Project::load(std::string filename) {
     std::ifstream fin(filename);
     ptree node;
     read_json(fin, node);
     fromnode(node);
 }
-
-CPI::Solution::Solution(std::string solutionfilename) :
-    solutionfilename(solutionfilename) {}
-
-CPI::Solution::Solution() {}
-
-CPI::Solution::Solution(std::string solutionfilename, Project main)  :
-    solutionfilename(solutionfilename), mainapp(main) {
-    save();
-}
-
-CPI::Solution::Solution(std::string solutionfilename, 
-    std::string name, std::string compilerflags, std::string linkerflags, 
-    std::initializer_list<std::string>& files) :
-    solutionfilename(solutionfilename) {
-    TargetSpec target(name, compilerflags, linkerflags);
-    std::vector<File> fs;
-    std::transform(files.begin(), files.end(), fs.begin(),
-        [](std::string file) {
-            return File(file, "00000000000000000000000000000000");
-        });
-    mainapp = Project(target, fs);
-}
-
-CPI::Solution::Solution(std::string solutionfilename, 
-    std::string name, std::string compilerflags, std::string linkerflags, 
-    std::vector<std::string>& files) :
-    solutionfilename(solutionfilename)  {
-    TargetSpec target(name, compilerflags, linkerflags);
-    std::vector<File> fs;
-    std::transform(files.begin(), files.end(), fs.begin(),
-        [](std::string file) {
-            return File(file, "00000000000000000000000000000000");
-        });
-    mainapp = Project(target, fs);
-}
-
-void CPI::Solution::addsubproject(Project &project) {
-    projects.push_back(project);
-}
-
-bool CPI::Solution::haschanged() {
-    bool did = mainapp.haschanged();
-    for(auto& p : projects)
-        did |= p.haschanged();
-    return did;
-}
-
-ptree CPI::Solution::tonode() {
-    ptree node;
-    node.put_child("mainapp", mainapp.tonode());
-    /*no i've tried, adding a list DOESN'T get simpler*/
-    ptree projectnode;
-    if(projects.size() > 0) {
-        for(auto& project : projects)
-            projectnode.push_back(ptree::value_type("", project.tonode()));
-        node.add_child("projects", projectnode);        
-    }
-    return node;
-}
-
-void CPI::Solution::save() {
-    std::ofstream fout(solutionfilename);
-    write_json(fout, tonode());
-}
-
-void CPI::Solution::load() {
-    std::ifstream fin(solutionfilename);
-    ptree node;
-    read_json(fin, node);
-    
-    ptree mainappnode = node.get_child("mainapp");
-    mainapp = Project(mainappnode);
-    
-    if(node.count("projects")) {
-        for( auto& projectnode : node.get_child("projects")) {
-            projects.push_back(Project(projectnode.second));
-        }
-    }
-}
-
-bool CPI::Solution::build(bool force) {
-    for(auto& p : projects)
-        if(p.haschanged() || force) {
-            bool result = p.build(force);
-            std::ofstream fout(solutionfilename);
-            write_json(fout, tonode());
-            if(!result)
-                return false;
-        }
-    if(mainapp.haschanged() || force) {
-        bool result = mainapp.build(force);
-        std::ofstream fout(solutionfilename);
-        write_json(fout, tonode());
-            if(!result)
-                return false;
-    }
-    return true;
-}
-
-
-
-
-
-
-

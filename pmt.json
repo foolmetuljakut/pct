@@ -1,31 +1,71 @@
 {
     "mainapp": {
         "target": {
-            "name": "pmt-0.5.4",
+            "name": "pmt-0.6.0",
             "compilerflags": "-fdiagnostics-color=always -Werror -Wfatal-errors -g -DBOOST_BIND_GLOBAL_PLACEHOLDERS",
             "linkerflags": ""
         },
-        "version": "0.5.4.29",
+        "version": "0.6.0.6",
         "files": [
             {
-                "name": "exec.cpp",
-                "hash": "7b940bc9fdbb95b1868a3dec5572509a"
+                "name": "exec.hpp",
+                "hash": "155e88ba6d1712dae455bc3a4f29c007"
             },
             {
-                "name": "structure.cpp",
-                "hash": "661598e07ae2b4925610ca6eb7b23485"
+                "name": "file.hpp",
+                "hash": "739e4b6cfbd89e32276c41b07cf681b5"
+            },
+            {
+                "name": "targetspec.hpp",
+                "hash": "8b90f72987dfd726cea0a0fa200d65cf"
+            },
+            {
+                "name": "project.hpp",
+                "hash": "1c0f4b3a42cc2096446a23b6fb1cd49b"
+            },
+            {
+                "name": "solution.hpp",
+                "hash": "7ea8d3b300aa4d334055face34ef338f"
+            },
+            {
+                "name": "pmtexception.hpp",
+                "hash": "666247876a688040e00f0bc3501cfd9b"
+            },
+            {
+                "name": "boost.hpp",
+                "hash": "891406d478becc0103bcf3d776eb124a"
+            },
+            {
+                "name": "std.hpp",
+                "hash": "2ae6bd095032f9e62f874541bd63ebfe"
+            },
+            {
+                "name": "exec.cpp",
+                "hash": "507089b59416e5b456d35315833a39be"
             },
             {
                 "name": "pmt.cpp",
-                "hash": "5b1acd575cf52580a5a609d650c07b34"
+                "hash": "76693fbb0e15d8cc71a7247dbd58cb33"
             },
             {
-                "name": "exec.hpp",
-                "hash": "fe56fdbce531c5d41784c35fbd5ff9e4"
+                "name": "file.cpp",
+                "hash": "b12c7a4dc245e365e72f2d2cb78ba04d"
             },
             {
-                "name": "structure.hpp",
-                "hash": "b4660e764aad835b7cb231c205a29059"
+                "name": "targetspec.cpp",
+                "hash": "7a783925f0a4d56ec82be6c000afc892"
+            },
+            {
+                "name": "project.cpp",
+                "hash": "d87eb9090e649532c050aeaee2f4ff8e"
+            },
+            {
+                "name": "solution.cpp",
+                "hash": "e6032c684bb8739a5ba3aeacccdd8ee6"
+            },
+            {
+                "name": "pmtexception.cpp",
+                "hash": "c345f2923f41785a9844ae05a0d3804a"
             }
         ]
     }

@@ -11,29 +11,29 @@
 using boost::property_tree::ptree,
         boost::property_tree::write_json;
 
-#include "structure.hpp"
+#include "solution.hpp"
 
-#define CPIVERSION "0.5"
+#define PMTVERSION "0.5"
 
 int main1(int argc, char **argv) {
-    CPI::File file("cpi/cpi.cpp");
-    CPI::File file2("cpi/structure.hpp");
-    CPI::File file3("cpi/structure.cpp");
-    CPI::TargetSpec target("cpi-app", "-g", "");
-    CPI::Project project(target, {file, file2, file3});
+    Pmt::File file("cpi/cpi.cpp");
+    Pmt::File file2("cpi/structure.hpp");
+    Pmt::File file3("cpi/structure.cpp");
+    Pmt::TargetSpec target("cpi-app", "-g", "");
+    Pmt::Project project(target, {file, file2, file3});
     write_json(std::cout, project.tonode());
     std::cout << project.compilecmd(file.name) << std::endl;
     std::cout << project.compilecmd(file2.name) << std::endl;
     std::cout << project.compilecmd(file3.name) << std::endl;
     std::cout << project.linkcmd() << std::endl;
-    // CPI::exec(project.compilecmd());
+    // Pmt::exec(project.compilecmd());
     project.save("cpi/project.json");
     return 0;
 }
 
 int main2(int argc, char **argv) {
     std::cout << "loading" << std::endl;
-    CPI::Project project("cpi/project.json");
+    Pmt::Project project("cpi/project.json");
     std::cout << "project has " << (project.haschanged() ? "" : "not ") << "changed" << std::endl;
     std::cout << "updating settings: " << std::endl;
     project.compile(true);
@@ -44,7 +44,7 @@ int main2(int argc, char **argv) {
 
 int main3(int argc, char **argv) {
     /*cpi loads its own settings and recompiles itself*/
-    CPI::Project project("cpi/project.json");
+    Pmt::Project project("cpi/project.json");
     project.addfile("cpi/exec.hpp");
     project.addfile("cpi/exec.cpp");
     project.spec.opts = "-fdiagnostics-color=always -Werror -g -DBOOST_BIND_GLOBAL_PLACEHOLDERS -lboost_program_options";
@@ -55,7 +55,7 @@ int main3(int argc, char **argv) {
 }
 
 int main5(int argc, char **argv) {
-    CPI::Solution solution("cpi/solution.json");
+    Pmt::Solution solution("cpi/solution.json");
     solution.load();
     solution.build(true);
     return 0;
@@ -82,7 +82,7 @@ void separateoptions(std::string& arg, std::vector<std::string>& args) {
         args.push_back(std::string("-t"));
     }
     else if (!std::string("-v").compare(arg) || !std::string("--version").compare(arg)) {
-        std::cout << "version: " << CPIVERSION << std::endl;
+        std::cout << "version: " << PMTVERSION << std::endl;
     }
     else if (!std::string("-h").compare(arg) || !std::string("--help").compare(arg)) {
         std::cout << "help: " << 
@@ -107,7 +107,7 @@ void fe_execution(std::vector<std::string>& args) {
                 fe = !std::string("-fe").compare(arg0) || !std::string("--force-exec").compare(arg0);
         if((e || fe) && std::filesystem::exists(std::filesystem::path({fn}))) {
             try {
-                CPI::Solution s(fn);
+                Pmt::Solution s(fn);
                 s.load();
                 if(s.haschanged() || fe) {
                     bool succeeded = s.build(fe);
@@ -115,7 +115,7 @@ void fe_execution(std::vector<std::string>& args) {
                         exit(1);
                 }
                 else {
-                    //throw CPI::CPIException({"solution ", fn, " up to date"});
+                    //throw Pmt::PmtException({"solution ", fn, " up to date"});
                     std::cout << "solution " << fn << " is up to date" << std::endl; // otherwise "crashes" with return code -1
                     exit(0);
                 }
@@ -143,8 +143,8 @@ int main(int argc, char **argv) {
     /*processing*/
     unsigned mode = DECL_STRUCTURE; /* s:0, p:1, t:2, o:3, f:4*/
     bool expecting = false;
-    std::shared_ptr<CPI::Solution> solution;
-    CPI::Project *currentproject;
+    std::shared_ptr<Pmt::Solution> solution;
+    Pmt::Project *currentproject;
     for(auto& arg : args) {
         /*mode switching*/
         if(!std::string("-s").compare(arg) || !std::string("--structure").compare(arg)) {
@@ -161,7 +161,7 @@ int main(int argc, char **argv) {
                 expecting = false;
             }
             else
-                throw CPI::CPIException({"currently not in mode (", 
+                throw Pmt::PmtException({"currently not in mode (", 
                     mode == 0 ? "decl. struct." : (
                     mode == 1 ? "decl. proj" : (
                     mode == 2 ? "decl. target" : (
@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
                 mode = COMPILER_OPTIONS;
                 expecting = false;
             } else
-                throw CPI::CPIException({"currently not in mode (", 
+                throw Pmt::PmtException({"currently not in mode (", 
                     mode == 0 ? "decl. struct." : (
                     mode == 1 ? "decl. proj" : (
                     mode == 2 ? "decl. target" : (
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
                 mode = LINKER_OPTIONS;
                 expecting = false;
             } else
-                throw CPI::CPIException({"currently not in mode (", 
+                throw Pmt::PmtException({"currently not in mode (", 
                     mode == 0 ? "decl. struct." : (
                     mode == 1 ? "decl. proj" : (
                     mode == 2 ? "decl. target" : (
@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
                 mode = LIST_FILES;
                 expecting = false;
             } else
-                throw CPI::CPIException({"currently not in mode (", 
+                throw Pmt::PmtException({"currently not in mode (", 
                     mode == 0 ? "decl. struct." : (
                     mode == 1 ? "decl. proj" : (
                     mode == 2 ? "decl. target" : (
@@ -213,7 +213,7 @@ int main(int argc, char **argv) {
                 mode = UNITTEST_SYMBOL;
                 expecting = false;
             } else
-                throw CPI::CPIException({"currently not in mode (", 
+                throw Pmt::PmtException({"currently not in mode (", 
                     mode == 0 ? "decl. struct." : (
                     mode == 1 ? "decl. proj" : (
                     mode == 2 ? "decl. target" : (
@@ -238,16 +238,16 @@ int main(int argc, char **argv) {
             case DECL_PROJECT:
                 if(!solution) {
                     std::cout << "solution empty => creating new" << std::endl;
-                    solution = std::make_shared<CPI::Solution>();
+                    solution = std::make_shared<Pmt::Solution>();
                     std::cout << "project empty => creating new" << std::endl;
-                    solution->mainapp = CPI::Project();
+                    solution->mainapp = Pmt::Project();
                     currentproject = &solution->mainapp;
-                    solution->mainapp.spec = CPI::TargetSpec();
+                    solution->mainapp.spec = Pmt::TargetSpec();
                     expecting = true;
                 }
                 else {
                     std::cout << "appending new subproject" << std::endl;
-                    solution->projects.push_back(CPI::Project());
+                    solution->projects.push_back(Pmt::Project());
                     currentproject = &solution->projects.back();
                 }
                 break;
@@ -256,7 +256,7 @@ int main(int argc, char **argv) {
                     currentproject->spec.name = arg;
                 else {
                     std::cout << "target spec is empty => assigning new" << std::endl;
-                    currentproject->spec = CPI::TargetSpec();
+                    currentproject->spec = Pmt::TargetSpec();
                     expecting = true;
                 }
                 break;
@@ -299,7 +299,7 @@ int main(int argc, char **argv) {
                 }
                 break;
             default:
-                throw CPI::CPIException({"can't accept ", arg, " while expecting ",
+                throw Pmt::PmtException({"can't accept ", arg, " while expecting ",
                 mode == 0 ? "a structure name or project" : (
                 mode == 1 ? "a targetname" : (
                 mode == 2 ? "a list of options" : "a list of files"))});

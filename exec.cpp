@@ -1,6 +1,6 @@
 #include "exec.hpp"
 
-std::tuple<std::string, int> CPI::exec(std::string cmd) {
+std::tuple<std::string, int> Pmt::exec(std::string cmd) {
     int exitcode = 0;
     std::array<char, 128> buffer;
     std::string result;
