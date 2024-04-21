@@ -5,7 +5,7 @@
             "compilerflags": "-fdiagnostics-color=always -Werror -Wfatal-errors -g -DBOOST_BIND_GLOBAL_PLACEHOLDERS",
             "linkerflags": ""
         },
-        "version": "0.7.0.30",
+        "version": "0.7.1.30",
         "files": [
             {
                 "name": "exec.hpp",

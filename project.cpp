@@ -96,7 +96,7 @@ bool Pmt::Project::compile(bool force, int unittestnr)
                 int rhsPt = rhs.name.size() - rhs.name.rfind('.');
                 std::string lhsEnding = lhs.name.substr(lhs.name.size() - lhsPt, lhsPt);
                 std::string rhsEnding = rhs.name.substr(rhs.name.size() - rhsPt, rhsPt);
-                return -lhsEnding.compare(rhsEnding); 
+                return lhsEnding.compare(rhsEnding); 
                 // compare returns 1 for cpp / hpp 
                 // -1 * compare => -1, sorting hpp before cpp
             });
