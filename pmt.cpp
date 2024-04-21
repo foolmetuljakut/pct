@@ -3,17 +3,10 @@
 #include <string>
 #include <memory>
 #include <filesystem>
-// #include <boost/program_options.hpp>
-// using namespace boost::program_options;
-
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/array.hpp>
-using boost::property_tree::ptree,
-        boost::property_tree::write_json;
 
 #include "solution.hpp"
 
-#define PMTVERSION "0.5"
+#define PMTVERSION "0.7"
 
 int main1(int argc, char **argv) {
     Pmt::File file("cpi/cpi.cpp");
