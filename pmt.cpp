@@ -4,6 +4,8 @@
 #include <memory>
 #include <filesystem>
 
+#include <gtest/gtest.h>
+
 #include "solution.hpp"
 
 #define PMTVERSION "0.7"
@@ -122,6 +124,7 @@ void fe_execution(std::vector<std::string>& args) {
 }
 
 int main(int argc, char **argv) {
+    
     std::vector<std::string> args;
     for(unsigned i = 1; i < argc; i++) {
         auto arg = std::string(argv[i]);

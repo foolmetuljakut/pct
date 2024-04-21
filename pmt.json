@@ -1,19 +1,15 @@
 {
     "mainapp": {
         "target": {
-            "name": "pmt-0.6.0",
+            "name": "pmt-0.7.1",
             "compilerflags": "-fdiagnostics-color=always -Werror -Wfatal-errors -g -DBOOST_BIND_GLOBAL_PLACEHOLDERS",
             "linkerflags": ""
         },
-        "version": "0.7.1.30",
+        "version": "0.7.1.37",
         "files": [
             {
                 "name": "exec.hpp",
                 "hash": "155e88ba6d1712dae455bc3a4f29c007"
-            },
-            {
-                "name": "std.hpp",
-                "hash": "2ae6bd095032f9e62f874541bd63ebfe"
             },
             {
                 "name": "exec.cpp",
@@ -21,43 +17,7 @@
             },
             {
                 "name": "pmt.cpp",
-                "hash": "76693fbb0e15d8cc71a7247dbd58cb33"
-            },
-            {
-                "name": "project.cpp",
-                "hash": "67b896b4044ebab49ddf22e470ed5b03"
-            },
-            {
-                "name": "targetspec.cpp",
-                "hash": "7a783925f0a4d56ec82be6c000afc892"
-            },
-            {
-                "name": "project.cpp",
-                "hash": "d87eb9090e649532c050aeaee2f4ff8e"
-            },
-            {
-                "name": "solution.cpp",
-                "hash": "e6032c684bb8739a5ba3aeacccdd8ee6"
-            },
-            {
-                "name": "pmtexception.cpp",
-                "hash": "c345f2923f41785a9844ae05a0d3804a"
-            },
-            {
-                "name": "exec.hpp",
-                "hash": "155e88ba6d1712dae455bc3a4f29c007"
-            },
-            {
-                "name": "file.hpp",
-                "hash": "739e4b6cfbd89e32276c41b07cf681b5"
-            },
-            {
-                "name": "pmtexception.hpp",
-                "hash": "666247876a688040e00f0bc3501cfd9b"
-            },
-            {
-                "name": "solution.hpp",
-                "hash": "7ea8d3b300aa4d334055face34ef338f"
+                "hash": "62e5c27aeb9e9934c916b448f3c84c54"
             },
             {
                 "name": "project.hpp",
@@ -66,6 +26,42 @@
             {
                 "name": "targetspec.hpp",
                 "hash": "8b90f72987dfd726cea0a0fa200d65cf"
+            },
+            {
+                "name": "project.cpp",
+                "hash": "6505dc37e8deec89ed7e64888fac45b4"
+            },
+            {
+                "name": "solution.hpp",
+                "hash": "7ea8d3b300aa4d334055face34ef338f"
+            },
+            {
+                "name": "pmtexception.hpp",
+                "hash": "666247876a688040e00f0bc3501cfd9b"
+            },
+            {
+                "name": "std.hpp",
+                "hash": "2ae6bd095032f9e62f874541bd63ebfe"
+            },
+            {
+                "name": "file.hpp",
+                "hash": "739e4b6cfbd89e32276c41b07cf681b5"
+            },
+            {
+                "name": "file.cpp",
+                "hash": "b12c7a4dc245e365e72f2d2cb78ba04d"
+            },
+            {
+                "name": "pmtexception.cpp",
+                "hash": "c345f2923f41785a9844ae05a0d3804a"
+            },
+            {
+                "name": "solution.cpp",
+                "hash": "e6032c684bb8739a5ba3aeacccdd8ee6"
+            },
+            {
+                "name": "targetspec.cpp",
+                "hash": "7a783925f0a4d56ec82be6c000afc892"
             },
             {
                 "name": "boost.hpp",

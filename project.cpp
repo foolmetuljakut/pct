@@ -87,23 +87,6 @@ bool Pmt::Project::compile(bool force, int unittestnr)
     else
         std::cout << "[compiling \033[92m" << spec.name << "\033[37m]:\n";
 
-    auto sortFileList = [this](){
-        // this weird construction places headers first in the list,
-        // so they get compiled earlier due to the use of PCHs
-        std::sort(files.begin(), files.end(), 
-            [](const File& lhs, const File& rhs) {
-                int lhsPt = lhs.name.size() - lhs.name.rfind('.');
-                int rhsPt = rhs.name.size() - rhs.name.rfind('.');
-                std::string lhsEnding = lhs.name.substr(lhs.name.size() - lhsPt, lhsPt);
-                std::string rhsEnding = rhs.name.substr(rhs.name.size() - rhsPt, rhsPt);
-                return lhsEnding.compare(rhsEnding); 
-                // compare returns 1 for cpp / hpp 
-                // -1 * compare => -1, sorting hpp before cpp
-            });
-    };
-
-    sortFileList();
-
     for(auto& file : files) {
         if(!force)
             if(!file.haschanged(unittestnr))
@@ -114,7 +97,6 @@ bool Pmt::Project::compile(bool force, int unittestnr)
         
         // <1> = exit code, if(exitcode) => caught error
         if(std::get<1>(exec(s))) {
-            sortFileList();
             return false;
         }
 
@@ -122,8 +104,6 @@ bool Pmt::Project::compile(bool force, int unittestnr)
         hashing << "md5sum " << file.name;
         file.hash = std::get<0>(exec(hashing.str().c_str())).substr(0, 32);
     }
-
-    sortFileList();
 
     return true;
 }
